@@ -38,8 +38,14 @@ describe("toElkGraph", () => {
         id: "e1",
         sources: ["n1"],
         targets: ["n0"],
-        labels: [{ id: "l1", width: 10, height: 20 }],
+        labels: [{ id: "l1", text: "l1", width: 10, height: 20 }],
       },
     ]);
+  });
+
+  // Without text, ELK skips the label: it reserves no room and returns it at (0, 0).
+  it("gives each label its generated id as text, so the engine places it", () => {
+    const labels = (toElkGraph(request).edges ?? []).flatMap((edge) => edge.labels ?? []);
+    expect(labels.map((label) => [label.id, label.text])).toEqual([["l1", "l1"]]);
   });
 });

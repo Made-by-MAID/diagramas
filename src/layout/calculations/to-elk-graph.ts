@@ -26,10 +26,19 @@ export function toElkGraph(request: LayoutRequest): ElkNode {
       id: edge.key,
       sources: [edge.source],
       targets: [edge.target],
+      // ELK ignores a label without text: it reserves no room and leaves it at (0, 0).
+      // The text is the generated id, never the input; the size comes from width and height.
       labels:
         edge.label === null
           ? []
-          : [{ id: `l${index}`, width: edge.label.width, height: edge.label.height }],
+          : [
+              {
+                id: `l${index}`,
+                text: `l${index}`,
+                width: edge.label.width,
+                height: edge.label.height,
+              },
+            ],
     })),
   };
 }

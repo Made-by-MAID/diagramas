@@ -18,7 +18,7 @@ Only flowcharts exist today. Sequence, state and ERD diagrams are on the [roadma
 The package is not published on npm. To use it as a dependency:
 
 ```sh
-bun add github:maid-anime-ai/maid-diagramas
+bun add github:Made-by-MAID/diagramas
 ```
 
 To work on the code, clone the repository and run:

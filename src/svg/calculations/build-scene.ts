@@ -1,5 +1,6 @@
 import type { Diagram, DiagramEdge, DiagramNode } from "../../contract/data/diagram";
 import type {
+  Box,
   LayoutEdge,
   LayoutNode,
   LayoutResult,
@@ -12,6 +13,7 @@ import type { Theme } from "../../theme/data/theme";
 import type { Scene, SceneEdge, SceneLine, SceneNode } from "../data/scene";
 import { clipEndpoint } from "./clip-endpoint";
 import { formatNumber } from "./format-number";
+import { placeEdgeLabel } from "./place-edge-label";
 
 const TITLE_GAP = 20;
 const ARROW_LENGTH = 10;
@@ -44,6 +46,7 @@ export function buildScene(
     ),
   );
   const nodesById = new Map(nodes.map((node) => [node.id, node]));
+  const bounds = { ...offset, width: layout.width, height: layout.height };
   const edges = diagram.edges.map((edge, index) =>
     toSceneEdge(
       edge,
@@ -52,6 +55,7 @@ export function buildScene(
       nodesById.get(edge.from) as SceneNode,
       nodesById.get(edge.to) as SceneNode,
       offset,
+      bounds,
       theme,
     ),
   );
@@ -101,6 +105,7 @@ function toSceneEdge(
   source: SceneNode,
   target: SceneNode,
   offset: Point,
+  bounds: Box,
   theme: Theme,
 ): SceneEdge {
   const moved = placed.points.map((point) => ({ x: point.x + offset.x, y: point.y + offset.y }));
@@ -112,7 +117,16 @@ function toSceneEdge(
   );
   const route = unique.length < 2 ? moved : unique;
   const points = clipRoute(route, source, target);
-  const label = placed.label;
+  const label =
+    placed.label === null
+      ? null
+      : placeEdgeLabel(
+          { ...placed.label, x: placed.label.x + offset.x, y: placed.label.y + offset.y },
+          points,
+          source,
+          target,
+          bounds,
+        );
   return {
     id: edge.id,
     d: toPathData(points),
@@ -124,14 +138,11 @@ function toSceneEdge(
       label === null || measuredLabel === null
         ? null
         : {
-            x: label.x + offset.x,
-            y: label.y + offset.y,
-            width: label.width,
-            height: label.height,
+            ...label,
             lines: centeredLines(
               measuredLabel.lines,
-              label.x + offset.x + label.width / 2,
-              label.y + offset.y + label.height / 2,
+              label.x + label.width / 2,
+              label.y + label.height / 2,
               theme.font.size,
             ),
           },

@@ -1,12 +1,12 @@
 {
   "name": "maid-diagramas",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/maid-anime-ai/maid-diagramas.git"
+    "url": "git+https://github.com/Made-by-MAID/diagramas.git"
   },
   "main": "src/index.ts",
   "exports": {
