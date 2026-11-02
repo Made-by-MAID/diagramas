@@ -1,0 +1,5 @@
+node_modules/
+coverage/
+.archwarden/cache/
+*.log
+out/

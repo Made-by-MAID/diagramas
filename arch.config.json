@@ -1,0 +1,103 @@
+{
+  "$schema": "./node_modules/archwarden/schema/v0.json",
+  "version": 0,
+  "rules": [
+    {
+      "type": "structure",
+      "id": "a-module-has-data-calculations-actions",
+      "level": "error",
+      "why": "Data, calculations and actions are separated so that purity is visible in the path.",
+      "roots": [
+        "src/contract",
+        "src/theme",
+        "src/text",
+        "src/layout",
+        "src/svg",
+        "src/animation",
+        "src/render",
+        "src/output-validation"
+      ],
+      "allowed_subfolders": ["data", "calculations", "actions"]
+    },
+    {
+      "type": "structure",
+      "id": "file-names-are-kebab-case",
+      "level": "error",
+      "why": "Paths are the index of this project.",
+      "roots": ["src/**"],
+      "filename_patterns": ["^[a-z0-9-]+(\\.spec)?\\.ts$"]
+    },
+    {
+      "type": "naming",
+      "id": "a-file-exports-the-function-it-names",
+      "level": "error",
+      "why": "kebab-case.ts exports kebabCase, so a symbol can be found from its path.",
+      "roots": ["src/*/calculations", "src/*/actions", "src/flows", "src/main", "src/cli"],
+      "file_pattern": "^(?<name>[a-z0-9-]+)\\.ts$",
+      "must_export": {
+        "name": "{{camel(name)}}",
+        "kind": "function"
+      }
+    },
+    {
+      "type": "spec-pair",
+      "id": "every-file-has-a-spec-beside-it",
+      "level": "error",
+      "why": "Test-first. Type-only files have nothing a test could call.",
+      "roots": ["src", "src/**"],
+      "subfolders": ["."],
+      "skip_type_only": true,
+      "require_non_empty_spec": true,
+      "ignore_files": ["src/index.ts"]
+    },
+    {
+      "type": "import-boundary",
+      "id": "calculations-and-data-do-not-reach-actions",
+      "level": "error",
+      "why": "A calculation that imports an action is no longer a calculation. Specs may use the in-memory ports.",
+      "from": ["src/*/calculations", "src/*/data", "src/shared"],
+      "forbid_import_from": ["src/*/actions/**", "src/flows/**", "src/main/**", "src/cli/**"],
+      "include_type_only": true,
+      "except_from": ["src/**/*.spec.ts"]
+    },
+    {
+      "type": "import-boundary",
+      "id": "the-portable-core-imports-only-portable-packages",
+      "level": "error",
+      "why": "The core runs in a browser, so a Node builtin or a font parser cannot enter it.",
+      "from": [
+        "src/contract",
+        "src/contract/**",
+        "src/theme",
+        "src/theme/**",
+        "src/text/data",
+        "src/text/calculations",
+        "src/layout",
+        "src/layout/**",
+        "src/svg",
+        "src/svg/**",
+        "src/animation",
+        "src/animation/**",
+        "src/output-validation",
+        "src/output-validation/**",
+        "src/shared"
+      ],
+      "only_import_from_packages": ["elkjs", "svg-path-properties", "vitest"]
+    },
+    {
+      "type": "import-boundary",
+      "id": "binaries-are-wired-only-in-main",
+      "level": "error",
+      "why": "The real process runner is connected at one place, the composition root.",
+      "from": ["src/flows", "src/flows/**", "src/render/calculations", "src/render/data"],
+      "forbid_import_from": ["src/render/actions/create-node-*"],
+      "except_from": ["src/**/*.spec.ts"]
+    },
+    {
+      "type": "import-cycle",
+      "id": "no-import-cycles",
+      "level": "error",
+      "roots": ["src/**"]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "maid-diagramas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maid-anime-ai/maid-diagramas.git"
+  },
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./core": "./src/core.ts"
+  },
+  "bin": {
+    "maid-diagramas": "bin/maid-diagramas.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit && biome check . && archwarden check && bun scripts/check-structure.ts",
+    "test": "bun --bun vitest run",
+    "test:coverage": "bun --bun vitest run --coverage",
+    "prototype": "bun scripts/measure-prototype.ts",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "elkjs": "0.12.1",
+    "fontkit": "2.0.4",
+    "svg-path-properties": "2.2.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4",
+    "@fontsource/zilla-slab": "5.3.0",
+    "@types/bun": "1.4.4",
+    "@types/fontkit": "2.0.9",
+    "@vitest/coverage-istanbul": "5.0.5",
+    "archwarden": "0.37.0",
+    "husky": "9.1.7",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}
