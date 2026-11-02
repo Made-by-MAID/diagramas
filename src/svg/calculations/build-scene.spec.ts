@@ -124,3 +124,26 @@ describe("buildScene with a degenerate path", () => {
     expect(scene.edges[0]?.points.length).toBe(2);
   });
 });
+
+describe("buildScene with a label away from its edge", () => {
+  it("moves the label beside its own edge, inside the layout, and centers its text there", () => {
+    const stray = {
+      ...layout,
+      edges: [
+        { ...layout.edges[0], label: { x: 0, y: 0, width: 24, height: 20 } },
+        layout.edges[1],
+      ],
+    } as typeof layout;
+    const scene = buildScene(diagram, personalTheme, measured, stray);
+    const label = scene.edges[0]?.label;
+    const edge = scene.edges[0]?.points ?? [];
+    expect(label?.x).toBe((edge[0]?.x as number) + 4);
+    expect(label?.y).toBeCloseTo(((edge[0]?.y as number) + (edge[1]?.y as number)) / 2 - 10, 6);
+    expect(label?.lines[0]?.x).toBe((label?.x as number) + 12);
+  });
+
+  it("keeps a label the layout put beside its edge", () => {
+    const scene = buildScene(diagram, personalTheme, measured, layout);
+    expect(scene.edges[0]?.label?.x).toBe(30 + 32);
+  });
+});
